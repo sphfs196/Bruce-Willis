@@ -144,21 +144,25 @@ for epoch in range(start_epoch, start_epoch + EPOCH_TO_RUN):
     
     for trigramsItem in trigramsList:
         for context, target in trigramsItem:
-            # �Ncontext(ex : ['When','forty'])�ഫ��index(ex : [68, 15])
-            # �A�নpytorch��variable
+            # 將context(ex : ['When','forty'])轉換成index(ex : [68, 15])
+            # 再轉成pytorch的variable
             context_idxs = [word_to_ix[w] for w in context]
             context_var = autograd.Variable(torch.cuda.LongTensor(context_idxs))
 
-            # �M��gradient�A����W�@�����֭p
+            # step 2:
+            # 清空gradient，防止上一次的累計
             model.zero_grad()
 
-            # ��variable�ܼƶi�h�]forward
+            # step 3:
+            # 丟variable變數進去跑forward
             log_probs, embedd = model(context_var)
 
-            # �p��loss(��target variable��i�h)
+            # step 4:
+            # 計算loss(把target variable丟進去)
             loss = loss_function(log_probs, autograd.Variable(torch.cuda.LongTensor([word_to_ix[target]])))
 
-            # �]backward�A��sgradient
+            # step 5:
+            # 跑backward，更新gradient
             loss.backward()
             optimizer.step()
 
